@@ -111,7 +111,7 @@ type Iris = {
 
 	// ID API
 	PushId: (id: ID) => void;
-	PopId: (id: ID) => void;
+	PopId: () => void;
 	SetNextWidgetID: (id: ID) => void;
 
 	// Config API
