@@ -186,9 +186,11 @@ interface Widgets {
 	InputNum: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T> & NumberChanged;
 	InputText: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
 
-	// ROBLOX-TS DEVIATION: InputEnum's original signature is `(args: WidgetArguments, state?: States, enumType: Enum) => Widget;`,
-	// but obviously TypeScript doesn't like that.
-	InputEnum: <T extends Record<string, unknown>>(args: WidgetArguments, enumType: Enum, state?: T) => Widget<T>;
+	InputEnum: <T extends Record<string, unknown>>(
+		args: WidgetArguments,
+		state: T | undefined,
+		enumType: Enum,
+	) => Widget<T>;
 	Combo: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
 
 	InputVector2: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
@@ -198,12 +200,10 @@ interface Widgets {
 	InputColor3: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
 	InputColor4: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
 
-	// ROBLOX-TS DEVIATION: ComboArray's original signature is `(args: WidgetArguments, state?: States, selectionArray: Array<unknown>) => Widget;`,
-	// but obviously TypeScript doesn't like that.
 	ComboArray: <T extends Record<string, unknown>>(
 		args: WidgetArguments,
+		state: T | undefined,
 		selectionArray: Array<unknown>,
-		state?: T,
 	) => Widget<T>;
 
 	Table<T extends Record<string, unknown>>(this: void, args: WidgetArguments, state?: T): Widget<T>;
@@ -219,9 +219,6 @@ interface IrisDefinition extends Widgets {
 
 	Args: { [key in keyof Widgets]: key extends keyof WidgetEnums ? WidgetEnums[key] : Record<string, number> };
 	Events: Record<string, () => boolean>;
-
-	// ROBLOX-TS DEVIATION: This isn't from the original library.
-	GetConfig: () => Config;
 
 	SetNextWidgetID: (ID: string) => void;
 	ForceRefresh: () => void;
