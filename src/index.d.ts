@@ -1,362 +1,139 @@
-import { WidgetEnums } from "./types";
+import { Config, ID, Internal, State, Widget, WidgetArguments, WidgetStates } from "./types";
 
-export interface State<T = unknown> {
-	readonly value: T;
-	// ConnectedWidgets: Record<ID, Widget>;
-	// ConnectedFunctions: Array<(value: unknown) => void>;
+type Iris = {
+	/*
+        -----------
+          WIDGETS
+        -----------
+    */
 
-	get(): T;
-	set(newValue: T): void;
-	onChange(functionToConnect: (value: T) => void): void;
-}
-export type States = Record<string, State>;
-
-export type Stateify<T extends object> = { [P in keyof T]: T[P] extends State ? T[P] : State<T[P]> };
-
-export interface Event {
-	Init: (widget: Widget) => void;
-	Get: (widget: Widget) => boolean;
-}
-export interface Events {
-	active: () => boolean;
-	checked: () => boolean;
-	clicked: () => boolean;
-	closed: () => boolean;
-	collapsed: () => boolean;
-	collasped: () => boolean;
-	ctrlClicked: () => boolean;
-	doubleClicked: () => boolean;
-	hovered: () => boolean;
-	numberChanged: () => boolean;
-	opened: () => boolean;
-	rightClicked: () => boolean;
-	selected: () => boolean;
-	textChanged: () => boolean;
-	unchecked: () => boolean;
-	uncollapsed: () => boolean;
-	unselected: () => boolean;
-}
-
-// TODO: make it so you can index it
-export type Widget<T extends object = object, Args extends Arguments = Record<string, unknown>> = {
-	ID: string;
-	type: string;
-	state: Stateify<T>;
-
-	parentWidget: Widget;
-	Instance: GuiObject;
-	arguments: Args;
-
-	ZIndex: number;
-
-	trackedEvents: {};
-	lastCycleTick: number;
-
-	isHoveredEvent: boolean;
-	lastClickedTick: number;
-	lastRightClickedTick: number;
-	lastClickedTime: number;
-	lastClickedPosition: Vector2;
-	lastDoubleClickedTick: number;
-	lastCtrlClickedTick: number;
-	lastCheckedTick: number;
-	lastUncheckedTick: number;
-} & Stateify<T>;
-
-export type Argument = unknown;
-export type Arguments = Record<string, Argument>;
-export type WidgetArguments = Array<Argument> | Record<number, Argument>;
-
-export declare class WidgetClass {
-	Generate(): GuiObject;
-	Discard(): void;
-	Update(): void;
-
-	Args: Record<string, number>;
-	Events: Events;
-	hasChildren: boolean;
-	hasState: boolean;
-	ArgNames: Array<string>;
-
-	GenerateState(): void;
-	UpdateState(): void;
-
-	ChildAdded(): GuiObject;
-	ChildDiscarded(): void;
-}
-
-export interface WidgetUtility {
-	GuiService: GuiService;
-	UserInputService: UserInputService;
-
-	ICONS: {
-		RIGHT_POINTING_TRIANGLE: string;
-		DOWN_POINTING_TRIANGLE: string;
-		MULTIPLICATION_SIGN: string;
-		BOTTOM_RIGHT_CORNER: string;
-		CHECK_MARK: string;
-	};
-
-	findBestWindowPosForPopup: (refPos: Vector2, size: Vector2, outerMin: Vector2, outerMax: Vector2) => Vector2;
-	isPosInsideRect: (pos: Vector2, rectMin: Vector2, rectMax: Vector2) => boolean;
-	extend: (superClass: WidgetClass, subClass: WidgetClass) => WidgetClass;
-	discardState: (thisWidget: Widget) => void;
-
-	UIPadding: (Parent: GuiObject, PxPadding: Vector2) => UIPadding;
-	UIListLayout: (Parent: GuiObject, FillDirection: Enum.FillDirection, Padding: UDim) => UIListLayout;
-	UIStroke: (Parent: GuiObject, Thickness: number, Color: Color3, Transparency: number) => UIStroke;
-	UICorner: (Parent: GuiObject, PxRounding: number) => UICorner;
-	UISizeConstraint: (Parent: GuiObject, MinSize: Vector2, MaxSize: Vector2) => UISizeConstraint;
-
-	applyTextStyle: (thisInstance: TextLabel | TextButton | TextBox) => void;
-	applyInteractionHighlights: (Button: GuiButton, Highlightee: GuiObject, Colors: Record<string, unknown>) => void;
-	applyInteractionHighlightsWithMultiHighlightee: (
-		Button: GuiButton,
-		Highlightees: Array<Array<GuiObject | Record<string, Color3 | number>>>,
-	) => void;
-
-	applyTextInteractionHighlights: (
-		Button: GuiButton,
-		Highlightee: TextLabel | TextButton | TextBox,
-		Colors: Record<string, unknown>,
-	) => void;
-
-	applyFrameStyle: (thisInstance: GuiObject, forceNoPadding?: boolean, doubleyNoPadding?: boolean) => void;
-
-	EVENTS: {
-		hover: (pathToHovered: (thisWidget: Widget) => GuiObject) => Event;
-		click: (pathToClicked: (thisWidget: Widget) => GuiButton) => Event;
-		rightClick: (pathToClicked: (thisWidget: Widget) => GuiButton) => Event;
-		doubleClick: (pathToClicked: (thisWidget: Widget) => GuiButton) => Event;
-		ctrlClick: (pathToClicked: (thisWidget: Widget) => GuiButton) => Event;
-	};
-
-	abstractButton: WidgetClass;
-}
-
-interface Hovered {
-	hovered: () => boolean;
-}
-
-interface Clicked {
-	clicked: () => boolean;
-}
-
-interface NumberChanged {
-	numberChanged: () => boolean;
-}
-
-interface DoubleClicked {
-	doubleClicked: () => boolean;
-}
-
-interface Widgets {
 	End: () => void;
-	Text: (args: WidgetArguments) => Widget & Hovered;
-	TextColored: (args: WidgetArguments) => Widget & Hovered;
-	TextWrapped: (args: WidgetArguments) => Widget & Hovered;
 
-	Button: (args: WidgetArguments) => Widget & Clicked;
-	SmallButton: (args: WidgetArguments) => Widget & Clicked;
-	Checkbox: <T extends Record<string, unknown> = { isChecked: boolean }>(
-		args: WidgetArguments,
-		state?: T,
-	) => Widget<T> & { checked: () => boolean };
-	RadioButton: <T extends Record<string, unknown>>(
-		args: WidgetArguments,
-		state?: T,
-	) => Widget<T> & { active: () => boolean };
+	// Window API
+	Window: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	Tooltip: (arguments: WidgetArguments) => Widget;
 
-	Separator: (args?: WidgetArguments) => Widget;
-	Indent: (args?: WidgetArguments) => Widget;
-	SameLine: (args?: WidgetArguments) => Widget;
-	Group: (args?: WidgetArguments) => Widget;
-	Selectable: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T> & DoubleClicked;
+	// Menu Widget API
+	MenuBar: () => Widget;
+	Menu: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	MenuItem: (arguments: WidgetArguments) => Widget;
+	MenuToggle: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
 
-	Tree: <T extends Record<string, unknown> & { isUncollapsed: boolean }>(
-		args: WidgetArguments,
-		state?: T,
-	) => Widget<T> & { isUncollapsed: State<boolean> };
+	// Format Widget API
+	Separator: () => Widget;
+	Indent: (arguments?: WidgetArguments) => Widget;
+	SameLine: (arguments?: WidgetArguments) => Widget;
+	Group: () => Widget;
 
-	CollapsingHeader: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
+	// Text Widget API
+	Text: (arguments: WidgetArguments) => Widget;
+	TextWrapped: (arguments: WidgetArguments) => Widget;
+	TextColored: (arguments: WidgetArguments) => Widget;
+	SeparatorText: (arguments: WidgetArguments) => Widget;
+	InputText: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
 
-	DragNum: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
-	SliderNum: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
+	// Basic Widget API
+	Button: (arguments: WidgetArguments) => Widget;
+	SmallButton: (arguments: WidgetArguments) => Widget;
+	Checkbox: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	RadioButton: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
 
-	InputNum: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T> & NumberChanged;
-	InputText: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
+	// Tree Widget API
+	Tree: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	CollapsingHeader: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
 
-	InputEnum: <T extends Record<string, unknown>>(
-		args: WidgetArguments,
-		state: T | undefined,
-		enumType: Enum,
-	) => Widget<T>;
-	Combo: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
+	// Input Widget API
+	InputNum: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	InputVector2: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	InputVector3: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	InputUDim: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	InputUDim2: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	InputRect: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	InputColor3: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	InputColor4: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
 
-	InputVector2: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
-	InputVector3: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
-	InputUDim: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
-	InputUDim2: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
-	InputColor3: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
-	InputColor4: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
+	// Drag Widget API
+	DragNum: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	DragVector2: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	DragVector3: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	DragUDim: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	DragUDim2: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	DragRect: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
 
-	ComboArray: <T extends Record<string, unknown>>(
-		args: WidgetArguments,
-		state: T | undefined,
-		selectionArray: Array<unknown>,
-	) => Widget<T>;
+	// Slider Widget API
+	SliderNum: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	SliderVector2: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	SliderVector3: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	SliderUDim: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	SliderUDim2: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	SliderRect: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	SliderEnum: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
 
-	Table<T extends Record<string, unknown>>(this: void, args: WidgetArguments, state?: T): Widget<T>;
-	Table<T extends Record<string, unknown>>(this: void, args: Record<number, unknown>, state?: T): Widget<T>;
+	// Combo Widget Widget API
+	Selectable: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	Combo: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
+	ComboArray: (arguments: WidgetArguments, states: WidgetStates | undefined, selectionArray: unknown[]) => Widget;
+	ComboEnum: (arguments: WidgetArguments, states: WidgetStates | undefined, enumType: Enum) => Widget;
+	InputEnum: (arguments: WidgetArguments, states: WidgetStates | undefined, enumType: Enum) => Widget;
 
-	Window: <T extends Record<string, unknown>>(args: WidgetArguments, state?: T) => Widget<T>;
-	Tooltip: (args: WidgetArguments) => Widget;
-}
+	ProgressBar: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
 
-interface IrisDefinition extends Widgets {
-	SelectionImageObject: Frame;
-	parentInstance: BasePlayerGui;
-
-	Args: { [key in keyof Widgets]: key extends keyof WidgetEnums ? WidgetEnums[key] : Record<string, number> };
-	Events: Record<string, () => boolean>;
-
-	SetNextWidgetID: (ID: string) => void;
-	ForceRefresh: () => void;
-	WidgetConstructor: (type: string, widgetClass: WidgetClass) => void;
-
-	UpdateGlobalConfig: (deltaStyle: Config) => void;
-	PushConfig: (deltaStyle: Partial<Config>) => void;
-	PopConfig: () => void;
-
-	ComputedState: <T, S extends State<T>, U>(firstState: S, onChangeCallback: (firstState: T) => U) => State<U>;
-	State: <T>(initialValue: T) => State<T>;
-	WeakState: <T>(initialValue: T) => State<T>;
-
-	Init:
-		| ((parentInstance?: BasePlayerGui, eventConnection?: RBXScriptConnection) => IrisDefinition)
-		| ((parentInstance?: BasePlayerGui, eventConnection?: () => void) => IrisDefinition);
-	Connect(callback: () => void): void;
-
-	Append: (userInstance: GuiObject) => void;
+	// Table Widget Api
+	Table: (arguments: WidgetArguments) => Widget;
 	NextColumn: () => void;
 	SetColumnIndex: (columnIndex: number) => void;
 	NextRow: () => void;
 
+	/*
+        ---------
+          STATE
+        ---------
+    */
+
+	State: (initialValue: unknown) => State;
+	WeakState: (initialValue: unknown) => State;
+	ComputedState: (firstState: State, onChangeCallback: (firstState: unknown) => unknown) => State;
+
+	/*
+        -------------
+          FUNCTIONS
+        -------------
+    */
+
+	Init: (playerInstance?: BasePlayerGui, eventConnection?: RBXScriptConnection | (() => void)) => Iris;
+	Shutdown: () => void;
+	Connect: (this: Iris, callback: () => void) => void;
+	Append: (userInstance: GuiObject) => void;
+	ForceRefresh: () => void;
+
+	// Widget
 	SetFocusedWindow: (thisWidget?: Widget) => void;
-	PushId: (input: number | string) => void;
-	PopId: () => void;
-}
 
-export interface Config {
-	TextColor: Color3;
-	TextTransparency: number;
-	TextDisabledColor: Color3;
-	TextDisabledTransparency: number;
+	// ID API
+	PushId: (id: ID) => void;
+	PopId: (id: ID) => void;
+	SetNextWidgetID: (id: ID) => void;
 
-	BorderColor: Color3;
-	BorderActiveColor: Color3;
-	BorderTransparency: number;
-	BorderActiveTransparency: number;
+	// Config API
+	UpdateGlobalConfig: (deltaStyle: Record<string, unknown>) => void;
+	PushConfig: (deltaStyle: Record<string, unknown>) => void;
+	PopConfig: () => void;
 
-	WindowBgColor: Color3;
-	WindowBgTransparency: number;
-	ScrollbarGrabColor: Color3;
-	ScrollbarGrabTransparency: number;
+	/*
+        --------------
+          PROPERTIES
+        --------------
+    */
 
-	TitleBgColor: Color3;
-	TitleBgTransparency: number;
-	TitleBgActiveColor: Color3;
-	TitleBgActiveTransparency: number;
-	TitleBgCollapsedColor: Color3;
-	TitleBgCollapsedTransparency: number;
+	Internal: Internal;
+	Disabled: boolean;
+	Args: Record<string, Record<string, number>>;
+	Events: Record<string, () => boolean>;
 
-	MenubarBgColor: Color3;
-	MenubarBgTransparency: number;
+	TemplateConfig: Record<string, Config>;
+	_config: Config;
+	ShowDemoWindow: () => Widget;
+};
 
-	FrameBgColor: Color3;
-	FrameBgTransparency: number;
-	FrameBgHoveredColor: Color3;
-	FrameBgHoveredTransparency: number;
-	FrameBgActiveColor: Color3;
-	FrameBgActiveTransparency: number;
-
-	ButtonColor: Color3;
-	ButtonTransparency: number;
-	ButtonHoveredColor: Color3;
-	ButtonHoveredTransparency: number;
-	ButtonActiveColor: Color3;
-	ButtonActiveTransparency: number;
-
-	SliderGrabColor: Color3;
-	SliderGrabTransparency: number;
-	SliderGrabActiveColor: Color3;
-	SliderGrabActiveTransparency: number;
-
-	HeaderColor: Color3;
-	HeaderTransparency: number;
-	HeaderHoveredColor: Color3;
-	HeaderHoveredTransparency: number;
-	HeaderActiveColor: Color3;
-	HeaderActiveTransparency: number;
-
-	SelectionImageObjectColor: Color3;
-	SelectionImageObjectTransparency: number;
-	SelectionImageObjectBorderColor: Color3;
-	SelectionImageObjectBorderTransparency: number;
-
-	TableBorderStrongColor: Color3;
-	TableBorderStrongTransparency: number;
-	TableBorderLightColor: Color3;
-	TableBorderLightTransparency: number;
-	TableRowBgColor: Color3;
-	TableRowBgTransparency: number;
-	TableRowBgAltColor: Color3;
-	TableRowBgAltTransparency: number;
-
-	NavWindowingHighlightColor: Color3;
-	NavWindowingHighlightTransparency: number;
-	NavWindowingDimBgColor: Color3;
-	NavWindowingDimBgTransparency: number;
-
-	SeparatorColor: Color3;
-	SeparatorTransparency: number;
-
-	CheckMarkColor: Color3;
-	CheckMarkTransparency: number;
-
-	ItemWidth: UDim;
-	ContentWidth: UDim;
-
-	WindowPadding: Vector2;
-	WindowResizePadding: Vector2;
-	FramePadding: Vector2;
-	ItemSpacing: Vector2;
-	ItemInnerSpacing: Vector2;
-	CellPadding: Vector2;
-	DisplaySafeAreaPadding: Vector2;
-	IndentSpacing: number;
-
-	TextFont: Font;
-	TextSize: number;
-	FrameBorderSize: number;
-	FrameRounding: number;
-	GrabRounding: number;
-	WindowBorderSize: number;
-	WindowTitleAlign: Enum.LeftRight;
-	PopupBorderSize: number;
-	PopupRounding: number;
-	ScrollbarSize: number;
-	GrabMinSize: number;
-
-	UseScreenGUIs: boolean;
-	Parent: BasePlayerGui;
-	DisplayOrderOffset: number;
-	ZIndexOffset: number;
-
-	MouseDoubleClickTime: number;
-	MouseDoubleClickMaxDist: number;
-	MouseDragThreshold: number;
-}
-
-declare const Iris: IrisDefinition;
-export default Iris;
+declare const Iris: Iris;
+export = Iris;
