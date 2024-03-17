@@ -90,9 +90,9 @@ type Iris = {
         ---------
     */
 
-	State: (initialValue: unknown) => State;
-	WeakState: (initialValue: unknown) => State;
-	ComputedState: (firstState: State, onChangeCallback: (firstState: unknown) => unknown) => State;
+	State: <T>(initialValue: T) => State<T>;
+	WeakState: <T>(initialValue: T) => State<T>;
+	ComputedState: <T>(firstState: State<T>, onChangeCallback: (firstState: T) => T) => State<T>;
 
 	/*
         -------------
