@@ -1,5 +1,13 @@
 import { Config, ID, Internal, State, Widget, WidgetArguments, WidgetStates } from "./types";
 
+type TemplateConfigs = {
+	colorDark: Partial<Config>;
+	colorLight: Partial<Config>;
+	sizeDefault: Partial<Config>;
+	sizeClear: Partial<Config>;
+	utilityDefault: Partial<Config>;
+};
+
 type Iris = {
 	/*
         -----------
@@ -115,8 +123,8 @@ type Iris = {
 	SetNextWidgetID: (id: ID) => void;
 
 	// Config API
-	UpdateGlobalConfig: (deltaStyle: Record<string, unknown>) => void;
-	PushConfig: (deltaStyle: Record<string, unknown>) => void;
+	UpdateGlobalConfig: (deltaStyle: Partial<Config>) => void;
+	PushConfig: (deltaStyle: Partial<Config>) => void;
 	PopConfig: () => void;
 
 	/*
@@ -130,7 +138,7 @@ type Iris = {
 	Args: Record<string, Record<string, number>>;
 	Events: Record<string, () => boolean>;
 
-	TemplateConfig: Record<string, Config>;
+	TemplateConfig: TemplateConfigs;
 	_config: Config;
 	ShowDemoWindow: () => Widget;
 };
