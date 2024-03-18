@@ -51,29 +51,14 @@ export type Arguments = Record<string, Argument> & {
 interface State<T = unknown> {
 	value: T;
 	ConnectedWidgets: Record<ID, string>;
-	ConnectedFunctions: Array<(arg0: T) => void>;
+	ConnectedFunctions: Array<(arg0: unknown) => void>;
 
 	get(): T;
 	set(newValue: T): void;
 	onChange(funcToConnect: (arg0: T) => void): void;
 }
 
-export type States = Record<string, State> & {
-	number: State;
-	color: State;
-	transparency: State;
-	editingText: State;
-	index: State;
-
-	size: State;
-	position: State;
-	progress: State;
-	scrollDistance: State;
-
-	isChecked: State;
-	isOpened: State;
-	isUncollapsed: State;
-};
+export type States = Record<string, State>;
 
 export type Event = {
 	Init: (arg0: Widget) => void;
@@ -114,20 +99,104 @@ export type WidgetStates = Record<string, State> & {
 	isUncollapsed?: State;
 };
 
-export type Widget = Record<string, EventAPI & State> & {
+export interface Widget {
 	ID: ID;
 	type: string;
-	state: States;
+	state?: States;
 	lastCycleTick: number;
-	trackedEvents: {};
+	trackedEvents: Record<string, boolean>;
 
 	parentWidget: Widget;
 	Instance: GuiObject;
-	ChildContainer: GuiObject;
 	Disabled: boolean;
 	arguments: Arguments;
 	providedArguments: Arguments;
 	ZIndex: number;
+}
+
+export interface WidgetHoveredEvent {
+	isHoveredEvent?: boolean;
+	hovered: EventAPI;
+}
+
+export interface WidgetClickedEvent {
+	lastClickedTick?: number;
+	clicked: EventAPI;
+}
+
+export interface WidgetRightClickedEvent {
+	lastRightClickedTick?: number;
+	rightClicked: EventAPI;
+}
+
+export interface WidgetDoubleClickedEvent {
+	lastClickedTime?: number;
+	lastClickedPosition?: Vector2;
+	lastDoubleClickedTick?: number;
+	doubleClicked: EventAPI;
+}
+
+export interface WidgetCtrlClickedEvent {
+	lastCtrlClickedTick?: number;
+	ctrlClicked: EventAPI;
+}
+
+export interface WidgetOpenedEvents {
+	lastOpenedTick?: number;
+	lastClosedTick?: number;
+
+	opened: EventAPI;
+	closed: EventAPI;
+}
+
+export interface WidgetSelectedEvents {
+	lastSelectedTick?: number;
+	lastUnselectedTick?: number;
+
+	selected: EventAPI;
+	unselected: EventAPI;
+}
+
+export interface WidgetCheckedEvents {
+	lastCheckedTick?: number;
+	lastUncheckedTick?: number;
+
+	checked: EventAPI;
+	unchecked: EventAPI;
+}
+
+export interface WidgetNumberChangedEvent {
+	lastNumberChangedTick?: number;
+
+	numberChanged: EventAPI;
+}
+
+export interface WidgetMouseEvents
+	extends WidgetHoveredEvent,
+		WidgetClickedEvent,
+		WidgetRightClickedEvent,
+		WidgetDoubleClickedEvent,
+		WidgetCtrlClickedEvent {}
+
+export interface WidgetAll extends Widget, WidgetMouseEvents {
+	state: {
+		number: State;
+		color: State;
+		transparency: State;
+		editingText: State;
+		index: State;
+
+		size: State;
+		position: State;
+		progress: State;
+		scrollDistance: State;
+
+		isChecked: State;
+		isOpened: State;
+		isUncollapsed: State;
+	};
+
+	ChildContainer: GuiObject;
 
 	usesScreenGUI: boolean;
 	ButtonColors: Record<string, Color3 | number>;
@@ -140,16 +209,6 @@ export type Widget = Record<string, EventAPI & State> & {
 	CellInstances: Frame[];
 
 	// Event Props
-	isHoveredEvent: boolean;
-
-	lastClickedTick: number;
-	lastClickedTime: number;
-	lastClickedPosition: Vector2;
-
-	lastRightClickedTick: number;
-	lastDoubleClickedTick: number;
-	lastCtrlClickedTick: number;
-
 	lastCheckedTick: number;
 	lastUncheckedTick: number;
 	lastOpenedTick: number;
@@ -164,12 +223,6 @@ export type Widget = Record<string, EventAPI & State> & {
 	lastShortcutTick: number;
 
 	// Events
-	hovered: EventAPI;
-	clicked: EventAPI;
-	rightClicked: EventAPI;
-	ctrlClicked: EventAPI;
-	doubleClicked: EventAPI;
-
 	checked: EventAPI;
 	unchecked: EventAPI;
 	activated: EventAPI;
@@ -185,7 +238,7 @@ export type Widget = Record<string, EventAPI & State> & {
 
 	numberChanged: EventAPI;
 	textChanged: EventAPI;
-};
+}
 
 interface WidgetClass {
 	Generate(): GuiObject;
