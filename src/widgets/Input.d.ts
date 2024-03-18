@@ -1,5 +1,13 @@
 import { EventAPI, State, Widget, WidgetHoveredEvent, WidgetNumberChangedEvent } from "../types";
 
+export type WidgetInputArgs<T> = [
+	Text?: string,
+	Increment?: T,
+	Min?: T,
+	Max?: T,
+	Format?: string | string[],
+	NoButtons?: boolean,
+];
 export interface WidgetInput<T> extends Widget, WidgetHoveredEvent, WidgetNumberChangedEvent {
 	state: {
 		number: State<T>;
@@ -7,8 +15,10 @@ export interface WidgetInput<T> extends Widget, WidgetHoveredEvent, WidgetNumber
 	};
 }
 
+export type WidgetDragArgs<T> = [Text?: string, Increment?: T, Min?: T, Max?: T, Format?: string | string[]];
 export interface WidgetDrag<T> extends WidgetInput<T> {}
 
+export type WidgetInputColorArgs = [Text?: string, UseFloats?: boolean, UseHSV?: boolean, Format?: string];
 export interface WidgetInputColor3 extends Widget, WidgetHoveredEvent, WidgetNumberChangedEvent {
 	state: {
 		color: State<Color3>;
@@ -24,8 +34,10 @@ export interface WidgetInputColor4 extends WidgetInputColor3 {
 	};
 }
 
+export type WidgetSliderArgs<T> = WidgetDragArgs<T>;
 export interface WidgetSlider<T> extends WidgetInput<T> {}
 
+export type WidgetInputTextArgs = [Text?: string, TextHint?: string];
 export interface WidgetInputText extends Widget, WidgetHoveredEvent {
 	state: {
 		text: State<string>;

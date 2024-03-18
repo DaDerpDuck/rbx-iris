@@ -1,8 +1,9 @@
 import { EventAPI, State, Widget, WidgetHoveredEvent, WidgetSelectedEvents } from "../types";
 
-export interface WidgetRadioButton extends Widget, WidgetHoveredEvent, WidgetSelectedEvents {
+export type WidgetRadioButtonArgs<T> = [Text: string, Index: T];
+export interface WidgetRadioButton<T> extends Widget, WidgetHoveredEvent, WidgetSelectedEvents {
 	state: {
-		index: State;
+		index: State<T>;
 	};
 
 	active: EventAPI;

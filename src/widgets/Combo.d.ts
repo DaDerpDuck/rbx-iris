@@ -8,9 +8,10 @@ import {
 	WidgetOpenedEvents,
 } from "../types";
 
-export interface WidgetSelectable extends Widget, WidgetMouseEvents {
+export type WidgetSelectableArgs<T> = [Text: string, Index: T, NoClick?: boolean];
+export interface WidgetSelectable<T> extends Widget, WidgetMouseEvents {
 	state: {
-		index: State;
+		index: State<T>;
 	};
 
 	lastSelectedTick: number;
@@ -30,9 +31,10 @@ export interface WidgetSelectable extends Widget, WidgetMouseEvents {
 	};
 }
 
-export interface WidgetCombo extends Widget, WidgetHoveredEvent, WidgetClickedEvent, WidgetOpenedEvents {
+export type WidgetComboArgs = [Text: string, NoButton?: boolean, NoPreview?: boolean];
+export interface WidgetCombo<T = unknown> extends Widget, WidgetHoveredEvent, WidgetClickedEvent, WidgetOpenedEvents {
 	state: {
-		index: State;
+		index: State<T>;
 		isOpened: State<boolean>;
 	};
 
@@ -40,6 +42,6 @@ export interface WidgetCombo extends Widget, WidgetHoveredEvent, WidgetClickedEv
 	ChildContainer: GuiObject;
 }
 
-export interface WidgetComboArray extends WidgetCombo {}
+export interface WidgetComboArray<T> extends WidgetCombo<T> {}
 
-export interface WidgetComboEnum extends WidgetCombo {}
+export interface WidgetComboEnum<T extends Enum> extends WidgetCombo<T> {}

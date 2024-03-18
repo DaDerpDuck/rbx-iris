@@ -12,6 +12,8 @@ interface AbstractWidgetTree extends Widget, WidgetHoveredEvent {
 	uncollapsed: EventAPI;
 }
 
+export type WidgetTreeArgs = [Text: string, SpanAvailWidth?: boolean, NoIndent?: boolean];
 export interface WidgetTree extends AbstractWidgetTree {}
 
+export type WidgetCollapsingHeaderArgs = [Text: string];
 export interface WidgetCollapsingHeader extends AbstractWidgetTree {}

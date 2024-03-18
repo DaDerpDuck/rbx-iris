@@ -1,23 +1,48 @@
-import { Config, ID, Internal, State, Widget, WidgetArguments, WidgetStates } from "./types";
-import { WidgetButton } from "./widgets/Button";
-import { WidgetCheckbox } from "./widgets/Checkbox";
-import { WidgetCombo, WidgetComboArray, WidgetComboEnum, WidgetSelectable } from "./widgets/Combo";
-import { WidgetFormat } from "./widgets/Format";
+import { Config, ID, Internal, State, Widget, WidgetArguments } from "./types";
+import { WidgetButton, WidgetButtonArgs } from "./widgets/Button";
+import { WidgetCheckbox, WidgetCheckboxArgs } from "./widgets/Checkbox";
+import {
+	WidgetCombo,
+	WidgetComboArgs,
+	WidgetComboArray,
+	WidgetComboEnum,
+	WidgetSelectable,
+	WidgetSelectableArgs,
+} from "./widgets/Combo";
+import { WidgetFormat, WidgetIndentArgs, WidgetSamelineArgs } from "./widgets/Format";
 import {
 	WidgetDrag,
+	WidgetDragArgs,
 	WidgetInput,
+	WidgetInputArgs,
 	WidgetInputColor3,
 	WidgetInputColor4,
+	WidgetInputColorArgs,
 	WidgetInputText,
+	WidgetInputTextArgs,
 	WidgetSlider,
+	WidgetSliderArgs,
 } from "./widgets/Input";
-import { WidgetMenu, WidgetMenuBar, WidgetMenuItem, WidgetMenuToggle } from "./widgets/Menu";
-import { WidgetProgressBar } from "./widgets/Plot";
-import { WidgetRadioButton } from "./widgets/RadioButton";
-import { WidgetTable } from "./widgets/Table";
-import { WidgetSeparatorText, WidgetText } from "./widgets/Text";
-import { WidgetCollapsingHeader, WidgetTree } from "./widgets/Tree";
-import { WidgetTooltip, WidgetWindow } from "./widgets/Window";
+import {
+	WidgetMenu,
+	WidgetMenuArgs,
+	WidgetMenuBar,
+	WidgetMenuItem,
+	WidgetMenuItemArgs,
+	WidgetMenuToggle,
+	WidgetMenuToggleArgs,
+} from "./widgets/Menu";
+import { WidgetProgressBar, WidgetProgressBarArgs } from "./widgets/Plot";
+import { WidgetRadioButton, WidgetRadioButtonArgs } from "./widgets/RadioButton";
+import { WidgetTable, WidgetTableArgs } from "./widgets/Table";
+import { WidgetSeparatorText, WidgetSeparatorTextArgs, WidgetText, WidgetTextArgs } from "./widgets/Text";
+import { WidgetCollapsingHeader, WidgetCollapsingHeaderArgs, WidgetTree, WidgetTreeArgs } from "./widgets/Tree";
+import {
+	WidgetTooltip,
+	WindowTooltipArgs as WidgetTooltipArgs,
+	WidgetWindow,
+	WidgetWindowArgs,
+} from "./widgets/Window";
 
 type TemplateConfigs = {
 	colorDark: Partial<Config>;
@@ -37,99 +62,135 @@ type Iris = {
 	End: () => void;
 
 	// Window API
-	Window: (arguments: WidgetArguments, states?: Partial<WidgetWindow["state"]>) => WidgetWindow;
-	Tooltip: (arguments: WidgetArguments) => WidgetTooltip;
+	Window: (arguments: WidgetWindowArgs, states?: Partial<WidgetWindow["state"]>) => WidgetWindow;
+	Tooltip: (arguments: WidgetTooltipArgs) => WidgetTooltip;
 
 	// Menu Widget API
 	MenuBar: () => WidgetMenuBar;
-	Menu: (arguments: WidgetArguments, states?: Partial<WidgetMenu["state"]>) => WidgetMenu;
-	MenuItem: (arguments: WidgetArguments) => WidgetMenuItem;
-	MenuToggle: (arguments: WidgetArguments, states?: Partial<WidgetMenuToggle["state"]>) => WidgetMenuToggle;
+	Menu: (arguments: WidgetMenuArgs, states?: Partial<WidgetMenu["state"]>) => WidgetMenu;
+	MenuItem: (arguments: WidgetMenuItemArgs) => WidgetMenuItem;
+	MenuToggle: (arguments: WidgetMenuToggleArgs, states?: Partial<WidgetMenuToggle["state"]>) => WidgetMenuToggle;
 
 	// Format Widget API
 	Separator: () => WidgetFormat;
-	Indent: (arguments?: WidgetArguments) => WidgetFormat;
-	SameLine: (arguments?: WidgetArguments) => WidgetFormat;
+	Indent: (arguments?: WidgetIndentArgs) => WidgetFormat;
+	SameLine: (arguments?: WidgetSamelineArgs) => WidgetFormat;
 	Group: () => WidgetFormat;
 
 	// Text Widget API
-	Text: (arguments: WidgetArguments) => WidgetText;
+	Text: (arguments: WidgetTextArgs) => WidgetText;
 	/** @deprecated */
 	TextWrapped: (arguments: WidgetArguments) => WidgetText;
 	/** @deprecated */
 	TextColored: (arguments: WidgetArguments) => WidgetText;
-	SeparatorText: (arguments: WidgetArguments) => WidgetSeparatorText;
-	InputText: (arguments: WidgetArguments, states?: Partial<WidgetInputText["state"]>) => WidgetInputText;
+	SeparatorText: (arguments: WidgetSeparatorTextArgs) => WidgetSeparatorText;
+	InputText: (arguments: WidgetInputTextArgs, states?: Partial<WidgetInputText["state"]>) => WidgetInputText;
 
 	// Basic Widget API
-	Button: (arguments: WidgetArguments) => WidgetButton;
-	SmallButton: (arguments: WidgetArguments) => WidgetButton;
-	Checkbox: (arguments: WidgetArguments, states?: Partial<WidgetCheckbox["state"]>) => WidgetCheckbox;
-	RadioButton: (arguments: WidgetArguments, states?: Partial<WidgetRadioButton["state"]>) => WidgetRadioButton;
+	Button: (arguments: WidgetButtonArgs) => WidgetButton;
+	SmallButton: (arguments: WidgetButtonArgs) => WidgetButton;
+	Checkbox: (arguments: WidgetCheckboxArgs, states?: Partial<WidgetCheckbox["state"]>) => WidgetCheckbox;
+	RadioButton: <T>(
+		arguments: WidgetRadioButtonArgs<T>,
+		states?: Partial<WidgetRadioButton<T>["state"]>,
+	) => WidgetRadioButton<T>;
 
 	// Tree Widget API
-	Tree: (arguments: WidgetArguments, states?: Partial<WidgetTree["state"]>) => WidgetTree;
+	Tree: (arguments: WidgetTreeArgs, states?: Partial<WidgetTree["state"]>) => WidgetTree;
 	CollapsingHeader: (
-		arguments: WidgetArguments,
+		arguments: WidgetCollapsingHeaderArgs,
 		states?: Partial<WidgetCollapsingHeader["state"]>,
 	) => WidgetCollapsingHeader;
 
 	// Input Widget API
-	InputNum: (arguments: WidgetArguments, states?: Partial<WidgetInput<number>["state"]>) => WidgetInput<number>;
-	InputVector2: (arguments: WidgetArguments, states?: Partial<WidgetInput<Vector2>["state"]>) => WidgetInput<Vector2>;
-	InputVector3: (arguments: WidgetArguments, states?: Partial<WidgetInput<Vector3>["state"]>) => WidgetInput<Vector3>;
-	InputUDim: (arguments: WidgetArguments, states?: Partial<WidgetInput<UDim>["state"]>) => WidgetInput<UDim>;
-	InputUDim2: (arguments: WidgetArguments, states?: Partial<WidgetInput<UDim2>["state"]>) => WidgetInput<UDim2>;
-	InputRect: (arguments: WidgetArguments, states?: Partial<WidgetInput<Rect>["state"]>) => WidgetInput<Rect>;
-	InputColor3: (arguments: WidgetArguments, states?: Partial<WidgetInputColor3["state"]>) => WidgetInputColor3;
-	InputColor4: (arguments: WidgetArguments, states?: Partial<WidgetInputColor4["state"]>) => WidgetInputColor4;
+	InputNum: (
+		arguments: WidgetInputArgs<number>,
+		states?: Partial<WidgetInput<number>["state"]>,
+	) => WidgetInput<number>;
+	InputVector2: (
+		arguments: WidgetInputArgs<Vector2>,
+		states?: Partial<WidgetInput<Vector2>["state"]>,
+	) => WidgetInput<Vector2>;
+	InputVector3: (
+		arguments: WidgetInputArgs<Vector3>,
+		states?: Partial<WidgetInput<Vector3>["state"]>,
+	) => WidgetInput<Vector3>;
+	InputUDim: (arguments: WidgetInputArgs<UDim>, states?: Partial<WidgetInput<UDim>["state"]>) => WidgetInput<UDim>;
+	InputUDim2: (
+		arguments: WidgetInputArgs<UDim2>,
+		states?: Partial<WidgetInput<UDim2>["state"]>,
+	) => WidgetInput<UDim2>;
+	InputRect: (arguments: WidgetInputArgs<Rect>, states?: Partial<WidgetInput<Rect>["state"]>) => WidgetInput<Rect>;
+	InputColor3: (arguments: WidgetInputColorArgs, states?: Partial<WidgetInputColor3["state"]>) => WidgetInputColor3;
+	InputColor4: (arguments: WidgetInputColorArgs, states?: Partial<WidgetInputColor4["state"]>) => WidgetInputColor4;
 
 	// Drag Widget API
-	DragNum: (arguments: WidgetArguments, states?: Partial<WidgetDrag<number>["state"]>) => WidgetDrag<number>;
-	DragVector2: (arguments: WidgetArguments, states?: Partial<WidgetDrag<Vector2>["state"]>) => WidgetDrag<Vector2>;
-	DragVector3: (arguments: WidgetArguments, states?: Partial<WidgetDrag<Vector3>["state"]>) => WidgetDrag<Vector3>;
-	DragUDim: (arguments: WidgetArguments, states?: Partial<WidgetDrag<UDim>["state"]>) => WidgetDrag<UDim>;
-	DragUDim2: (arguments: WidgetArguments, states?: Partial<WidgetDrag<UDim2>["state"]>) => WidgetDrag<UDim2>;
-	DragRect: (arguments: WidgetArguments, states?: Partial<WidgetDrag<Rect>["state"]>) => WidgetDrag<Rect>;
+	DragNum: (arguments: WidgetDragArgs<number>, states?: Partial<WidgetDrag<number>["state"]>) => WidgetDrag<number>;
+	DragVector2: (
+		arguments: WidgetDragArgs<Vector2>,
+		states?: Partial<WidgetDrag<Vector2>["state"]>,
+	) => WidgetDrag<Vector2>;
+	DragVector3: (
+		arguments: WidgetDragArgs<Vector3>,
+		states?: Partial<WidgetDrag<Vector3>["state"]>,
+	) => WidgetDrag<Vector3>;
+	DragUDim: (arguments: WidgetDragArgs<UDim>, states?: Partial<WidgetDrag<UDim>["state"]>) => WidgetDrag<UDim>;
+	DragUDim2: (arguments: WidgetDragArgs<UDim2>, states?: Partial<WidgetDrag<UDim2>["state"]>) => WidgetDrag<UDim2>;
+	DragRect: (arguments: WidgetDragArgs<Rect>, states?: Partial<WidgetDrag<Rect>["state"]>) => WidgetDrag<Rect>;
 
 	// Slider Widget API
-	SliderNum: (arguments: WidgetArguments, states?: Partial<WidgetSlider<number>["state"]>) => WidgetSlider<number>;
+	SliderNum: (
+		arguments: WidgetSliderArgs<number>,
+		states?: Partial<WidgetSlider<number>["state"]>,
+	) => WidgetSlider<number>;
 	SliderVector2: (
-		arguments: WidgetArguments,
+		arguments: WidgetSliderArgs<Vector2>,
 		states?: Partial<WidgetSlider<Vector2>["state"]>,
 	) => WidgetSlider<Vector2>;
 	SliderVector3: (
-		arguments: WidgetArguments,
+		arguments: WidgetSliderArgs<Vector3>,
 		states?: Partial<WidgetSlider<Vector3>["state"]>,
 	) => WidgetSlider<Vector3>;
-	SliderUDim: (arguments: WidgetArguments, states?: Partial<WidgetSlider<UDim>["state"]>) => WidgetSlider<UDim>;
-	SliderUDim2: (arguments: WidgetArguments, states?: Partial<WidgetSlider<UDim2>["state"]>) => WidgetSlider<UDim2>;
-	SliderRect: (arguments: WidgetArguments, states?: Partial<WidgetSlider<Rect>["state"]>) => WidgetSlider<Rect>;
+	SliderUDim: (
+		arguments: WidgetSliderArgs<UDim>,
+		states?: Partial<WidgetSlider<UDim>["state"]>,
+	) => WidgetSlider<UDim>;
+	SliderUDim2: (
+		arguments: WidgetSliderArgs<UDim2>,
+		states?: Partial<WidgetSlider<UDim2>["state"]>,
+	) => WidgetSlider<UDim2>;
+	SliderRect: (
+		arguments: WidgetSliderArgs<Rect>,
+		states?: Partial<WidgetSlider<Rect>["state"]>,
+	) => WidgetSlider<Rect>;
 	// SliderEnum: (arguments: WidgetArguments, states?: WidgetStates) => Widget;
 
 	// Combo Widget Widget API
-	Selectable: (arguments: WidgetArguments, states?: Partial<WidgetSelectable["state"]>) => WidgetSelectable;
-	Combo: (arguments: WidgetArguments, states?: Partial<WidgetCombo["state"]>) => WidgetCombo;
-	ComboArray: (
-		arguments: WidgetArguments,
-		states: Partial<WidgetComboArray["state"]> | undefined,
-		selectionArray: unknown[],
-	) => WidgetComboArray;
-	ComboEnum: (
-		arguments: WidgetArguments,
-		states: Partial<WidgetComboEnum["state"]> | undefined,
-		enumType: Enum,
-	) => WidgetComboEnum;
-	InputEnum: (
-		arguments: WidgetArguments,
-		states: Partial<WidgetComboEnum["state"]> | undefined,
-		enumType: Enum,
-	) => WidgetComboEnum;
+	Selectable: <T>(
+		arguments: WidgetSelectableArgs<T>,
+		states?: Partial<WidgetSelectable<T>["state"]>,
+	) => WidgetSelectable<T>;
+	Combo: (arguments: WidgetComboArgs, states?: Partial<WidgetCombo["state"]>) => WidgetCombo;
+	ComboArray: <T>(
+		arguments: WidgetComboArgs,
+		states: Partial<WidgetComboArray<T>["state"]> | undefined,
+		selectionArray: T[],
+	) => WidgetComboArray<T>;
+	ComboEnum: <T extends Enum>(
+		arguments: WidgetComboArgs,
+		states: Partial<WidgetComboEnum<T>["state"]> | undefined,
+		enumType: T,
+	) => WidgetComboEnum<T>;
+	InputEnum: <T extends Enum>(
+		arguments: WidgetComboArgs,
+		states: Partial<WidgetComboEnum<T>["state"]> | undefined,
+		enumType: T,
+	) => WidgetComboEnum<T>;
 
-	ProgressBar: (arguments: WidgetArguments, states?: Partial<WidgetProgressBar["state"]>) => WidgetProgressBar;
+	ProgressBar: (arguments: WidgetProgressBarArgs, states?: Partial<WidgetProgressBar["state"]>) => WidgetProgressBar;
 
 	// Table Widget Api
-	Table: (arguments: WidgetArguments) => WidgetTable;
+	Table: (arguments: WidgetTableArgs) => WidgetTable;
 	NextColumn: () => void;
 	SetColumnIndex: (columnIndex: number) => void;
 	NextRow: () => void;
