@@ -2,9 +2,9 @@ import { EventAPI, State, Widget, WidgetHoveredEvent, WidgetNumberChangedEvent }
 
 export type WidgetInputArgs<T> = [
 	Text?: string,
-	Increment?: T,
-	Min?: T,
-	Max?: T,
+	Increment?: T | number,
+	Min?: T | number,
+	Max?: T | number,
 	Format?: string | string[],
 	NoButtons?: boolean,
 ];
@@ -15,7 +15,13 @@ export interface WidgetInput<T> extends Widget, WidgetHoveredEvent, WidgetNumber
 	};
 }
 
-export type WidgetDragArgs<T> = [Text?: string, Increment?: T, Min?: T, Max?: T, Format?: string | string[]];
+export type WidgetDragArgs<T> = [
+	Text?: string,
+	Increment?: T | number,
+	Min?: T | number,
+	Max?: T | number,
+	Format?: string | string[],
+];
 export interface WidgetDrag<T> extends WidgetInput<T> {}
 
 export type WidgetInputColorArgs = [Text?: string, UseFloats?: boolean, UseHSV?: boolean, Format?: string];
