@@ -203,7 +203,7 @@ type Iris = {
 
 	State: <T>(initialValue: T) => State<T>;
 	WeakState: <T>(initialValue: T) => State<T>;
-	ComputedState: <T>(firstState: State<T>, onChangeCallback: (firstState: T) => T) => State<T>;
+	ComputedState: <T, R>(firstState: State<T>, onChangeCallback: (firstState: T) => R) => State<R>;
 
 	/*
         -------------
