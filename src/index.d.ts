@@ -10,6 +10,7 @@ import {
 	WidgetSelectableArgs,
 } from "./widgets/Combo";
 import { WidgetFormat, WidgetIndentArgs, WidgetSamelineArgs } from "./widgets/Format";
+import { WidgetImage, WidgetImageArgs, WidgetImageButton, WidgetImageButtonArgs } from "./widgets/Image";
 import {
 	WidgetDrag,
 	WidgetDragArgs,
@@ -94,6 +95,10 @@ type Iris = {
 		arguments: WidgetRadioButtonArgs<T>,
 		states?: Partial<WidgetRadioButton<T>["state"]>,
 	) => WidgetRadioButton<T>;
+
+	// Image Widget API
+	Image: (arguments: WidgetImageArgs) => WidgetImage;
+	ImageButton: (arguments: WidgetImageButtonArgs) => WidgetImageButton;
 
 	// Tree Widget API
 	Tree: (arguments: WidgetTreeArgs, states?: Partial<WidgetTree["state"]>) => WidgetTree;
